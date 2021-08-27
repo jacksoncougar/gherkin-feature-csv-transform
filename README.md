@@ -11,8 +11,8 @@ This command will export each Scenario in the feature as a csv row. The Name is 
 
 The format of the name is `{JIRA-ID} - TC{TEST-CASE-NUMBER} - {SCENARIO}`
 
+![](images/2021-08-27-14-39-01.png)
 
-![](images/2021-08-27-13-22-30.png)
-![](images/2021-08-27-13-23-05.png)
-![](images/2021-08-27-13-23-16.png)
+![](images/2021-08-27-14-39-05.png)
 
+![](images/2021-08-27-14-39-09.png)
