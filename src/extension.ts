@@ -28,7 +28,11 @@ export function activate(context: vscode.ExtensionContext) {
               openPreviewDocument(jiraId, csv);
             }
           ),
-          (err) => vscode.window.showErrorMessage(`${err}`)
+          (err) => {
+            if (err) {
+              vscode.window.showErrorMessage(`${err}`);
+            }
+          }
         );
       } catch (e) {
         vscode.window.showErrorMessage(e.message);
