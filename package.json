@@ -3,6 +3,11 @@
   "displayName": "gherkin-feature-csv-transform",
   "description": "",
   "version": "0.0.1",
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/jacksoncougar/gherkin-feature-csv-transform.git"
+  },
+  "publisher": "JacksonCWiebe",
   "engines": {
     "vscode": "^1.59.0"
   },
