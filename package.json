@@ -2,7 +2,7 @@
   "name": "gherkin-feature-csv-transform",
   "displayName": "gherkin-feature-csv-transform",
   "description": "",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "repository": {
     "type": "github",
     "url": "https://github.com/jacksoncougar/gherkin-feature-csv-transform.git"
