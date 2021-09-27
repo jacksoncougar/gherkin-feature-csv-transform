@@ -4,6 +4,25 @@ import * as vscode from "vscode";
 
 import { Readable, pipeline } from "stream";
 
+class Provider implements vscode.TextDocumentContentProvider {
+  _onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
+  _onDidChange = this._onDidChangeEmitter.event;
+
+  get onDidChangeEmitter() {
+    return this._onDidChangeEmitter;
+  }
+
+  get onDidChange() {
+    return this._onDidChangeEmitter.event;
+  }
+
+  provideTextDocumentContent(uri: vscode.Uri): string {
+    return values.get(uri.path);
+  }
+}
+
+const provider = new Provider();
+
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand(
     "gherkin-feature-csv-transform.exportToZephyrCsv",
@@ -34,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
             }
           }
         );
-      } catch (e) {
+      } catch (e: any) {
         vscode.window.showErrorMessage(e.message);
       }
     }
@@ -88,20 +107,18 @@ function extractColumnData(matches: RegExpMatchArray | null, jiraId: string) {
   return columnData;
 }
 
-function createVirtualDocumentHandler() {
-  const myProvider = new (class implements vscode.TextDocumentContentProvider {
-    provideTextDocumentContent(uri: vscode.Uri): string {
-      return decodeURIComponent(uri.fragment);
-    }
-  })();
+let values = new Map();
 
-  vscode.workspace.registerTextDocumentContentProvider("csv", myProvider);
+function createVirtualDocumentHandler() {
+  vscode.workspace.registerTextDocumentContentProvider("csv", provider);
 }
 
 function openPreviewDocument(jiraId: any, csv: string) {
   const filename = `${jiraId}tdd.csv`.replace(/[^\d\w]/, "");
+  let uri = vscode.Uri.parse(`csv:///${filename}`);
+  values.set(uri.path, csv);
 
-  let uri = vscode.Uri.parse(`csv:///${filename}#${encodeURIComponent(csv)}`);
+  provider.onDidChangeEmitter.fire(uri);
 
   vscode.workspace.openTextDocument(uri).then((doc) => {
     vscode.window.showTextDocument(doc);

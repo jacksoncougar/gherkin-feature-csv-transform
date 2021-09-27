@@ -22,8 +22,8 @@
     "commands": [
       {
         "command": "gherkin-feature-csv-transform.exportToZephyrCsv",
-        "title": "Feature: Export To Zephyr (Csv)",
-        "enablement": "resourceLangId == feature"
+        "title": "Gherkin: Export To Zephyr Scale (Csv)",
+        "enablement": "resourceLangId == Gherkin || resourceLangId == feature"
       }
     ]
   },
