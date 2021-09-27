@@ -4,22 +4,7 @@ import * as vscode from "vscode";
 
 import { Readable, pipeline } from "stream";
 
-class Provider implements vscode.TextDocumentContentProvider {
-  _onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
-  _onDidChange = this._onDidChangeEmitter.event;
-
-  get onDidChangeEmitter() {
-    return this._onDidChangeEmitter;
-  }
-
-  get onDidChange() {
-    return this._onDidChangeEmitter.event;
-  }
-
-  provideTextDocumentContent(uri: vscode.Uri): string {
-    return values.get(uri.path);
-  }
-}
+import { Provider } from "./Provider";
 
 const provider = new Provider();
 
@@ -79,6 +64,9 @@ function readFeature(text: string | undefined) {
 function readFeatureImpl(text: string | undefined) {
   const fm = matter(text ?? "");
 
+  // remove whitespace and comments
+  fm.content = fm.content?.replace(/\s*#.*|^\s+(\r?\n)/gm, "");
+
   const scenarioMatches = fm.content?.match(
     /Scenario:[\s\S]*?(?=Scenario:|$)/g
   );
@@ -99,15 +87,37 @@ function extractColumnData(matches: RegExpMatchArray | null, jiraId: string) {
 
     columnData.push({
       name: `${jiraId} - TC${testCaseNumber} - ${name}`,
-      bdd: bdd,
+      bdd: alignMargin(bdd ?? ""),
     });
 
     testCaseNumber++;
   }
-  return columnData;
+  return columnData;  
 }
 
-let values = new Map();
+export let values = new Map();
+
+function alignMargin(strings: string) {
+  let lines = strings.trimEnd().split(/\r?\n/);
+  let margin = Math.min(...lines.map((line) => countWhitespacePrefix(line)));
+  
+  return lines.map((line) => trimMargin(line, margin)).join("\n");
+}
+
+function countWhitespacePrefix(line: string) {
+  let count = 0;
+  for (var c of line) {
+    if (!/\s/.test(c)) {
+      break;
+    }
+    count++;
+  }
+  return count;
+}
+
+function trimMargin(line: string, margin: number) {
+  return line.substring(margin, line.length);
+}
 
 function createVirtualDocumentHandler() {
   vscode.workspace.registerTextDocumentContentProvider("csv", provider);
